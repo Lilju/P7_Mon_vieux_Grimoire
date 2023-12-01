@@ -1,4 +1,5 @@
 const multer = require('multer');
+const sharp = require('sharp');
 
 const MIME_TYPES = {
     'image/jpg': 'jpg',
@@ -18,3 +19,8 @@ const storage = multer.diskStorage({
 });
 
 module.exports = multer({ storage }).single('image');
+
+/*sharp()
+    .resize(400, 500)
+    .webP({quality: 80})
+    .toFile(); */
