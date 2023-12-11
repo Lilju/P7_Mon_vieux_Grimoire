@@ -11,8 +11,6 @@ require('dotenv').config();
 
 app.use(express.json());
 
-console.log("app");
-
 mongoose.connect(process.env.CONNEXION,
   { useNewUrlParser: true,
     useUnifiedTopology: true })

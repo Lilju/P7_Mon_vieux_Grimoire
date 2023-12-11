@@ -8,17 +8,7 @@ const MIME_TYPES = {
     'image/png': 'png'
 };
 
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, 'images')
-    },
-    filename: (req, file, callback) => {
-        const name = file.originalname.split(' ').join('_');
-        const extension = MIME_TYPES[file.mimetype];
-        callback(null, name + Date.now() + '.' + extension);
-    }
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage }).single('image');
 
 const resizeImage = async (req, res, next) => {
@@ -33,16 +23,18 @@ const resizeImage = async (req, res, next) => {
                 .webp({quality: 80})
                 .toBuffer();
             await sharp(optimizedBuffer).toFile(
-                path.resolve(__dirname, "./images", newFilename)
+                path.resolve(__dirname, "../images", newFilename)
             );
             req.file.filename = newFilename;
             next();
-        } catch {
+        } catch (error) {
             console.error("Erreur lors de l'optimisation de l'image", error);
             next(error);
         }
+    } else if (!req.file) {
+        return next();
     } else {
-        next(newError("Aucun fichier fourni"));
+        next(new Error("Aucun fichier fourni"));
     }
 };
 

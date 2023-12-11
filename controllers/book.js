@@ -15,6 +15,27 @@ exports.createBook = (req, res, next) => {
     .catch(error => { res.status(400).json({ error })})
 };
 
+exports.createRating = (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+        .then( book => {    
+            const isAlreadyRated = book.ratings.find((book) => book.userId === req.auth.userId);
+              if ( !isAlreadyRated) {
+                book.ratings.push({
+                    userId: req.auth.userId,
+                    grade: req.body.rating
+                })
+                let newAverageRating = book.ratings.reduce((accumulator, currentValue) => accumulator + currentValue.grade, 0)/book.ratings.length;
+                book.averageRating = newAverageRating;
+    
+                return book.save()
+                } else {
+                    res.status(401).json({message: 'Book already rated'});
+                }
+            })
+        .then(book => res.status(201).json(book))
+        .catch(error => res.status(500).json({ error }));
+};
+
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file ? {
     ...JSON.parse(req.body.book),
@@ -75,8 +96,4 @@ exports.getBestRating = (req, res, next) => {
         const bestRatedBooks = books.slice(0, 3);
         res.status(201).json(bestRatedBooks)})
     .catch(error => res.status(404).json({ error }));
-};
-
-exports.createRating = (req, res, next) => {
-
 };
