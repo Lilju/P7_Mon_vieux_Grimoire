@@ -5,7 +5,8 @@ const path = require('path');
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
-    'image/png': 'png'
+    'image/png': 'png',
+    'image/webp': 'webp'
 };
 
 const storage = multer.memoryStorage();
@@ -17,10 +18,10 @@ const resizeImage = async (req, res, next) => {
             const { buffer, originalname, mimetype } = req.file;
             let name = originalname.split(" ").join("_");
             const extension = MIME_TYPES[mimetype];
-            const newFilename = name + Date.now() + "." + extension;
+            const newFilename = name + Date.now() + "." + "webp";
             let optimizedBuffer = await sharp(buffer)
                 .resize(463, 595)
-                .webp({quality: 80})
+                .toFormat("webp",{quality: 80})
                 .toBuffer();
             await sharp(optimizedBuffer).toFile(
                 path.resolve(__dirname, "../images", newFilename)

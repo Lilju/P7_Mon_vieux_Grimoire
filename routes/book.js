@@ -7,7 +7,7 @@ const bookCtrl = require('../controllers/book');
 
 router.get('/bestrating', bookCtrl.getBestRating);
 
-router.post('/:id/rating', bookCtrl.createRating);
+router.post('/:id/rating', auth, bookCtrl.createRating);
 
 router.post('/', auth, upload, resizeImage, bookCtrl.createBook);
   
